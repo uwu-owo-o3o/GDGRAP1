@@ -1,42 +1,42 @@
 #include "GLFW/glfw3.h"
+#include "Calculator.hpp"
+
+using namespace calculator;
 
 int main(){
     GLFWwindow* window;
 
-    /* Initialize the library */
     if (!glfwInit())
         return -1;
 
-    /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(900, 900, "ONG", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
         return -1;
     }
 
-    /* Make the window's context current */
     glfwMakeContextCurrent(window);
-    // initialization occurs in this section //
 
-    /* Loop until the user closes the window */
-    // the while loop below is also the render loop //
+    Calculator calculator = Calculator();
+
     while (!glfwWindowShouldClose(window))
     {
-        /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glBegin(GL_TRIANGLES);
-        glVertex2f(-0.5, -0.5f);
-        glVertex2f(0.0f, 0.5f);
-        glVertex2f(0.5f, -0.5f);
+        glBegin(GL_POLYGON);
+        
+        glVertex2f((*calculator.getXPointsArray())[0], (*calculator.getYPointsArray())[0]);
+        glVertex2f((*calculator.getXPointsArray())[1], (*calculator.getYPointsArray())[1]);
+        glVertex2f((*calculator.getXPointsArray())[2], (*calculator.getYPointsArray())[2]);
+        glVertex2f((*calculator.getXPointsArray())[3], (*calculator.getYPointsArray())[3]);
+        glVertex2f((*calculator.getXPointsArray())[4], (*calculator.getYPointsArray())[4]);
+
         glEnd();
 
-        /* Swap front and back buffers */
         glfwSwapBuffers(window);
 
-        /* Poll for and process events */
-        glfwPollEvents(); // processes user inputs //
+        glfwPollEvents();
     }
 
     glfwTerminate();
