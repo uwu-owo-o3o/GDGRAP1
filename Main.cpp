@@ -9,7 +9,7 @@ int main(){
     if (!glfwInit())
         return -1;
 
-    window = glfwCreateWindow(900, 900, "ONG", NULL, NULL);
+    window = glfwCreateWindow(900, 900, "Ong, Lance", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
