@@ -1,6 +1,10 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include "tiny_obj_loader.h"
+
+// when submitting .exe on release, put 3D folder in the Release folder //
 
 int main(){
     GLFWwindow* window;
@@ -17,6 +21,19 @@ int main(){
 
     glfwMakeContextCurrent(window);
     gladLoadGL();
+
+    std::string path = "3D/bunny.obj";
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> material;
+    std::string warning, error;
+    tinyobj::attrib_t attributes;
+
+    bool success = tinyobj::LoadObj(&attributes, &shapes, &material, &warning, &error, path.c_str());
+
+    std::vector<GLuint> mesh_indices; // EBO of 3d object
+    for (int i = 0; i < shapes[0].mesh.indices.size(); i++) { // get EBO indices array
+        mesh_indices.push_back(shapes[0].mesh.indices[i].vertex_index);
+    }
 
     GLfloat vertices[]{
       // x,    y,    z 
@@ -37,12 +54,16 @@ int main(){
 
     glBindVertexArray(VAO); // assigns VAO currently being edited
     glBindBuffer(GL_ARRAY_BUFFER, VBO); // assigns VBO currently being edited and attaches VBO to VAO
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // sizeof(vertices) -> size of array in bytes, GL_STATIC_DRAW as the model doesn't move
+
+    // the VBO's contents:
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GL_FLOAT) * attributes.vertices.size(), &attributes.vertices[0], GL_STATIC_DRAW); // sizeof(vertices) -> size of array in bytes, GL_STATIC_DRAW as the model doesn't move
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    // the EBO;s contents:
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * mesh_indices.size(), mesh_indices.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
 
@@ -57,7 +78,7 @@ int main(){
 
         glBindVertexArray(VAO);
         //glDrawArrays(GL_TRIANGLES, 0, 3);
-        glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, mesh_indices.size(), GL_UNSIGNED_INT, 0);
 
 
         glEnd();
