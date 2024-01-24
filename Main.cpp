@@ -39,6 +39,34 @@ int main(){
     gladLoadGL();
     glfwSetKeyCallback(window, Key_Callback);
 
+    std::fstream vertSrc("Shaders/sample.vert");
+    std::stringstream vertBuff;
+    vertBuff << vertSrc.rdbuf();
+
+    std::string vertS = vertBuff.str();
+    const char* v = vertS.c_str();
+
+    std::fstream fragSrc("Shaders/sample.frag");
+    std::stringstream fragBuff;
+    fragBuff << fragSrc.rdbuf();
+
+    std::string fragS = fragBuff.str();
+    const char* f = fragS.c_str();
+
+    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &v, NULL);
+    glCompileShader(vertexShader);
+
+    GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragShader, 1, &f, NULL);
+    glCompileShader(fragShader);
+
+    GLuint shaderProg = glCreateProgram();
+    glAttachShader(shaderProg, vertexShader);
+    glAttachShader(shaderProg, fragShader);
+
+    glLinkProgram(shaderProg);
+
     std::string path = "3D/bunny.obj";
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> material;
@@ -90,18 +118,19 @@ int main(){
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
     glm::mat4 identity_matrix = glm::mat4(1.0f);
-    float x = 1.0f; 
-    float y = 2.0f;
-    float z = 0.0f;
 
-    float scale_x = 1.0f;
-    float scale_y = 1.0f;
-    float scale_z = 0.0f;
+    float x = 0; 
+    float y = 0;
+    float z = 0;
 
-    float theta = 45.0f;
-    float axis_x = 1.0f;
-    float axis_y = 1.0f;
-    float axis_z = 1.0f;
+    float scale_x = 5;
+    float scale_y = 5;
+    float scale_z = 1;
+
+    float theta = 90;
+    float axis_x = 0;
+    float axis_y = 1;
+    float axis_z = 0;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -119,8 +148,9 @@ int main(){
 
 
         unsigned int transformLoc = glGetUniformLocation(shaderProg, "transform");
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transformation_matrix));
 
-
+        glUseProgram(shaderProg);
         glBindVertexArray(VAO);
        
         glDrawElements(GL_TRIANGLES, mesh_indices.size(), GL_UNSIGNED_INT, 0);
