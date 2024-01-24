@@ -1,6 +1,10 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+
 #include "iostream"
 #include "string"
 
@@ -18,8 +22,6 @@ void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mod
     }
 }
 
-
-
 int main(){
     GLFWwindow* window;
 
@@ -36,35 +38,6 @@ int main(){
     glfwMakeContextCurrent(window);
     gladLoadGL();
     glfwSetKeyCallback(window, Key_Callback);
-     
-    std::fstream vertSrc("Shaders/sample.vert");
-    std::stringstream vertBuff;
-    vertBuff << vertSrc.rdbuf();
-
-    std::string vertS = vertBuff.str();
-    const char* v = vertS.c_str();
-
-    std::fstream fragSrc("Shaders/sample.frag");
-    std::stringstream fragBuff;
-    fragBuff << fragSrc.rdbuf();
-
-    std::string fragS = fragBuff.str();
-    const char* f = fragS.c_str();
-
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &v, NULL);
-    glCompileShader(vertexShader);
-
-    GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragShader, 1, &f, NULL);
-    glCompileShader(fragShader);
-
-    GLuint shaderProg = glCreateProgram();
-    glAttachShader(shaderProg, vertexShader);
-    glAttachShader(shaderProg, fragShader);
-
-    glLinkProgram(shaderProg);
-
 
     std::string path = "3D/bunny.obj";
     std::vector<tinyobj::shape_t> shapes;
@@ -116,17 +89,40 @@ int main(){
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+    glm::mat4 identity_matrix = glm::mat4(1.0f);
+    float x = 1.0f; 
+    float y = 2.0f;
+    float z = 0.0f;
+
+    float scale_x = 1.0f;
+    float scale_y = 1.0f;
+    float scale_z = 0.0f;
+
+    float theta = 45.0f;
+    float axis_x = 1.0f;
+    float axis_y = 1.0f;
+    float axis_z = 1.0f;
+
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
-            
-        //x_mod += 0.001f;
-        unsigned int xLoc = glGetUniformLocation(shaderProg, "x");
-        glUniform1f(xLoc, x_mod);
+         
+        // start with translation matrix //
+        glm::mat4 transformation_matrix = glm::translate(identity_matrix, glm::vec3(x, y, z));
 
-        glUseProgram(shaderProg);
+       
+        // multiply matrix with scale matrix //
+        transformation_matrix = glm::scale(transformation_matrix, glm::vec3(scale_x, scale_y, scale_z));
+
+        // multiply with rotate matrix //
+        transformation_matrix = glm::rotate(transformation_matrix, glm::radians(theta), glm::normalize(glm::vec3(axis_x, axis_y, axis_z)));
+
+
+        unsigned int transformLoc = glGetUniformLocation(shaderProg, "transform");
+
+
         glBindVertexArray(VAO);
-        //glDrawArrays(GL_TRIANGLES, 0, 3);
+       
         glDrawElements(GL_TRIANGLES, mesh_indices.size(), GL_UNSIGNED_INT, 0);
 
 
