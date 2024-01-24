@@ -2,7 +2,7 @@
 
 layout(location = 0) in vec3 aPos;
 
-uniform mat4 transform 
+uniform mat4 transform; 
 
 void main() {
 
