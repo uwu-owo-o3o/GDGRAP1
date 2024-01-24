@@ -8,6 +8,17 @@
 #include "tiny_obj_loader.h"
 
 // when submitting .exe on release, put 3D folder in the Release folder //
+float x_mod = 0;
+
+
+void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+
+    if (key == GLFW_KEY_D && action == GLFW_PRESS) {
+        x_mod += 0.1f;
+    }
+}
+
+
 
 int main(){
     GLFWwindow* window;
@@ -24,9 +35,8 @@ int main(){
 
     glfwMakeContextCurrent(window);
     gladLoadGL();
-
-    float x_mod = 0;
-
+    glfwSetKeyCallback(window, Key_Callback);
+     
     std::fstream vertSrc("Shaders/sample.vert");
     std::stringstream vertBuff;
     vertBuff << vertSrc.rdbuf();
@@ -110,7 +120,7 @@ int main(){
     {
         glClear(GL_COLOR_BUFFER_BIT);
             
-        x_mod += 0.001f;
+        //x_mod += 0.001f;
         unsigned int xLoc = glGetUniformLocation(shaderProg, "x");
         glUniform1f(xLoc, x_mod);
 
