@@ -37,7 +37,7 @@ int main(){
 
     glfwMakeContextCurrent(window);
     gladLoadGL();
-    glfwSetKeyCallback(window, Key_Callback);
+    //glfwSetKeyCallback(window, Key_Callback);
 
     std::fstream vertSrc("Shaders/sample.vert");
     std::stringstream vertBuff;
