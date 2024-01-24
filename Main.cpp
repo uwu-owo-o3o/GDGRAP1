@@ -25,6 +25,8 @@ int main(){
     glfwMakeContextCurrent(window);
     gladLoadGL();
 
+    float x_mod = 0;
+
     std::fstream vertSrc("Shaders/sample.vert");
     std::stringstream vertBuff;
     vertBuff << vertSrc.rdbuf();
@@ -107,6 +109,10 @@ int main(){
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
+            
+        x_mod += 0.001f;
+        unsigned int xLoc = glGetUniformLocation(shaderProg, "x");
+        glUniform1f(xLoc, x_mod);
 
         glUseProgram(shaderProg);
         glBindVertexArray(VAO);
