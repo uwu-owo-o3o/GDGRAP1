@@ -13,38 +13,22 @@
 
 // when submitting .exe on release, put 3D folder in the Release folder //
 float x_mod = 0;
-float z_mod = -2.f;
+
 
 void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
     if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-        x_mod += 20.0f;
-    }
-
-    if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-        x_mod -= 20.0f;
-    }
-
-    if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-        std::cout << "pressed W" << std::endl;
-        z_mod -= 0.3f;
-    }
-
-    if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-        z_mod += 0.3f;
+        x_mod += 0.1f;
     }
 }
 
-int main(){
+int main() {
     GLFWwindow* window;
 
     if (!glfwInit())
         return -1;
 
-    float window_width = 600.f;
-    float window_height = 600.f;
-
-    window = glfwCreateWindow(window_width, window_height, "Ong, Lance", NULL, NULL);
+    window = glfwCreateWindow(900, 900, "Ong, Lance", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -53,9 +37,7 @@ int main(){
 
     glfwMakeContextCurrent(window);
     gladLoadGL();
-
-
-    glfwSetKeyCallback(window, Key_Callback);
+    //glfwSetKeyCallback(window, Key_Callback);
 
     std::fstream vertSrc("Shaders/sample.vert");
     std::stringstream vertBuff;
@@ -99,16 +81,16 @@ int main(){
     }
 
     GLfloat vertices[]{
-      // x,    y,    z 
-        0.f, 0.5f, 0.f,
-        -0.5f, -0.5f, 0.f,
-        0.5f,   -0.5f, 0.f
+        // x,    y,    z 
+          0.f, 0.5f, 0.f,
+          -0.5f, -0.5f, 0.f,
+          0.5f,   -0.5f, 0.f
     };
 
     GLuint indices[]{
         0, 1, 2
     };
-    
+
     GLuint VAO, VBO, EBO;
 
     glGenVertexArrays(1, &VAO); // line responsible for VAO
@@ -137,9 +119,9 @@ int main(){
 
     glm::mat4 identity_matrix = glm::mat4(1.0f);
 
-    float x = 0; 
+    float x = 0;
     float y = 0;
-    float z = -2.f;
+    float z = 0;
 
     float scale_x = 5;
     float scale_y = 5;
@@ -149,50 +131,28 @@ int main(){
     float axis_x = 0;
     float axis_y = 1;
     float axis_z = 0;
-    
-    /*glm::mat4 projectionMatrix = glm::ortho(
-        -2.0f, // Left
-        2.0f, // Right
-       -2.0f, // Bot
-        2.0f, // Top
-        -1.0f, // zNear
-        1.0f // zFar
-    );*/
-
-    glm::mat4 projectionMatrix = glm::perspective(
-        glm::radians(60.f), // fov
-        // zoom in - fov
-        // zoom out + fov
-        window_height / window_width, // aspect ratio
-        0.1f, //zNear [NOTE]: zNear cannot be >= 0 !
-        100.f //zFar
-    );
 
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
-        z = z_mod;
-        theta = x_mod;
 
         // start with translation matrix //
         glm::mat4 transformation_matrix = glm::translate(identity_matrix, glm::vec3(x, y, z));
 
-       
+
         // multiply matrix with scale matrix //
         transformation_matrix = glm::scale(transformation_matrix, glm::vec3(scale_x, scale_y, scale_z));
 
         // multiply with rotate matrix //
         transformation_matrix = glm::rotate(transformation_matrix, glm::radians(theta), glm::normalize(glm::vec3(axis_x, axis_y, axis_z)));
-        
-       unsigned int projectionLoc = glGetUniformLocation(shaderProg, "projection");
-       glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+
 
         unsigned int transformLoc = glGetUniformLocation(shaderProg, "transform");
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transformation_matrix));
 
         glUseProgram(shaderProg);
         glBindVertexArray(VAO);
-       
+
         glDrawElements(GL_TRIANGLES, mesh_indices.size(), GL_UNSIGNED_INT, 0);
 
 
@@ -202,7 +162,7 @@ int main(){
 
         glfwPollEvents();
     }
-    
+
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
     glDeleteBuffers(1, &EBO);
