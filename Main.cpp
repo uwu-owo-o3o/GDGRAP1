@@ -136,6 +136,7 @@ int main() {
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
+     
         // start with translation matrix //
         glm::mat4 transformation_matrix = glm::translate(identity_matrix, glm::vec3(x, y, z));
 
