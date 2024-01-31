@@ -161,6 +161,8 @@ int main(){
 
     glm::mat4 projectionMatrix = glm::perspective(
         glm::radians(60.f), // fov
+        // zoom in - fov
+        // zoom out + fov
         window_height / window_width, // aspect ratio
         0.1f, //zNear [NOTE]: zNear cannot be >= 0 !
         100.f //zFar
