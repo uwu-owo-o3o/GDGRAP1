@@ -122,8 +122,8 @@ int main() {
 
     float theta = 90.f;
     float axis_x = 0.f;
-    float axis_y = 1.f;
-    float axis_z = 0.f;
+    float axis_y = 0.f;
+    float axis_z = 1.f;
 
     float polar_theta = 0.0f;
 
@@ -134,9 +134,9 @@ int main() {
         // use polar coordinate system instead of cartesian coordinate system //
 
         // conversion of polar to cartesian //
-        float radian_tetha = (polar_theta / 180) * 3.14;
-        float x_mod = 0.55f * cos(radian_tetha);
-        float y_mod = 0.55f * sin(radian_tetha);
+        float radian_theta = (polar_theta / 180) * 3.14;
+        float x_mod = 0.55f * cos(radian_theta);
+        float y_mod = 0.55f * sin(radian_theta);
 
         // increment angle so it spins //
         polar_theta += 0.05f;
@@ -150,12 +150,16 @@ int main() {
         x = x_mod;
         y = y_mod;
 
+        theta += 0.05f; // increment theta for rotation matrix so bunny spins in place
 
         // start with translation matrix //
         glm::mat4 transformation_matrix = glm::translate(identity_matrix, glm::vec3(x, y, z));
 
         // multiply matrix with scale matrix //
         transformation_matrix = glm::scale(transformation_matrix, glm::vec3(scale_x, scale_y, scale_z));
+
+        // multiply matrix with rotate matrix //
+        transformation_matrix = glm::rotate(transformation_matrix, glm::radians(theta), glm::normalize(glm::vec3(axis_x, axis_y, axis_z)));
 
         unsigned int transformLoc = glGetUniformLocation(shaderProg, "transform");
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transformation_matrix));
