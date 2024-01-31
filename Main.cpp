@@ -9,6 +9,7 @@
 #include "string"
 #include "windows.h"
 
+#include "cmath"
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
@@ -124,127 +125,31 @@ int main() {
     float axis_y = 1.f;
     float axis_z = 0.f;
 
-    float x_check1 = 0.0f;
-    float y_check1 = 0.5f;
-  
-    float x_check2 = 0.5f;
-    float y_check2 = 0.0f;
-
-    float x_check3 = 0.0f;
-    float y_check3 = -0.5f;
-
-    float x_check4 = -0.5f;
-    float y_check4 =  0.0f;
-
-    bool move = false;
-    bool hasPassedCheck1 = false;
-    bool hasPassedCheck2 = false;
-    bool hasPassedCheck3 = false;
-    bool hasPassedCheck4 = false;
-
-    float x_mod = 0.0f;
-    float y_mod = 0.5f;
+    float polar_theta = 0.0f;
 
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
-
-      
-
-        if (move == false) {
-            x = 0.0f;
-            y = y_mod;
-            move = true;
-        }
-
-        // updates flags
-        if (x == x_check1 && y == y_check1) {
-            std::cout << "passed check point 1" << std::endl;
-            hasPassedCheck1 = true;
-            hasPassedCheck2 = false;
-            hasPassedCheck3 = false;
-            hasPassedCheck4 = false;
-        }
-
-        if (x == x_check2 && y == y_check2) {
-            std::cout << "passed check point 2" << std::endl;
-            hasPassedCheck1 = false;
-            hasPassedCheck2 = true;
-            hasPassedCheck3 = false;
-            hasPassedCheck4 = false;
-        }
-
-        if (x == x_check3 && y == y_check3) {
-            std::cout << "passed check point 3" << std::endl;
-            hasPassedCheck1 = false;
-            hasPassedCheck2 = false;
-            hasPassedCheck3 = true;
-            hasPassedCheck4 = false;
-        }
         
-        if (x == x_check4 && y == y_check4) {
-            std::cout << "passed check point 4" << std::endl;
-            hasPassedCheck1 = false;
-            hasPassedCheck2 = false;
-            hasPassedCheck3 = false;
-            hasPassedCheck4 = true;
+        // use polar coordinate system instead of cartesian coordinate system //
+
+        // conversion of polar to cartesian //
+        float radian_tetha = (polar_theta / 180) * 3.14;
+        float x_mod = 0.55f * cos(radian_tetha);
+        float y_mod = 0.55f * sin(radian_tetha);
+
+        // increment angle so it spins //
+        polar_theta += 0.05f;
+
+        // if angle hits 360, reset to 0 //
+        if (polar_theta == 360.0f) {
+            polar_theta = 0.0f;
         }
 
-        Sleep(300);
-
-        // updates coordinates for movement
-        if (hasPassedCheck1 == true) {
-            std::cout << "successfully passed check 1 "<< std::endl;
-            x_mod += 0.1f;
-            if (x_mod == 0.5f) {
-                std::cout << "entered correction" << std::endl;
-                y_mod = 0.0f;
-            }
-            else {
-                y_mod -= 0.1f;
-            }  
-        }
-
-        else if (hasPassedCheck2 == true) {
-            std::cout << "successfully passed check 2 " << std::endl;
-            y_mod -= 0.1f;
-            if (y_mod == -0.5f) {
-                std::cout << "entered correction" << std::endl;
-                x_mod = 0.0f;
-            }
-            else {
-                x_mod -= 0.1f;
-            }
-        }
-
-        else if (hasPassedCheck3 == true) {
-            std::cout << "successfully passed check 3 " << std::endl;
-            x_mod -= 0.1f;
-            if (x_mod == -0.5f) {
-                std::cout << "entered correction" << std::endl;
-                y_mod = 0.0f;
-            }
-            else {
-                y_mod += 0.1f;
-            }
-        }
-       
-        else if (hasPassedCheck4 == true) {
-            std::cout << "successfully passed check 4 " << std::endl;
-            y_mod += 0.1f;
-            if (y_mod == 0.5f) {
-                std::cout << "entered correction" << std::endl;
-                x_mod = 0.0f;
-            }
-            else {
-                x_mod += 0.1f;
-            }
-        }
-
+        // modify transformation matrix coordinates //
         x = x_mod;
-        std::cout << "check x value: " << x << std::endl;
         y = y_mod;
-        std::cout << "check y value: " << y << std::endl;
+
 
         // start with translation matrix //
         glm::mat4 transformation_matrix = glm::translate(identity_matrix, glm::vec3(x, y, z));
