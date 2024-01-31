@@ -28,7 +28,7 @@ int main(){
     if (!glfwInit())
         return -1;
 
-    window = glfwCreateWindow(900, 900, "Ong, Lance", NULL, NULL);
+    window = glfwCreateWindow(600, 600, "Ong, Lance", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -37,6 +37,8 @@ int main(){
 
     glfwMakeContextCurrent(window);
     gladLoadGL();
+
+
     //glfwSetKeyCallback(window, Key_Callback);
 
     std::fstream vertSrc("Shaders/sample.vert");
@@ -131,6 +133,15 @@ int main(){
     float axis_x = 0;
     float axis_y = 1;
     float axis_z = 0;
+    
+    glm::mat4 projectionMatrix = glm::ortho(
+        -2.0f, // Left
+        2.0f, // Right
+       -2.0f, // Bot
+        2.0f, // Top
+        -1.0f, // zNear
+        1.0f // zFar
+    );
 
     while (!glfwWindowShouldClose(window))
     {
@@ -145,7 +156,9 @@ int main(){
 
         // multiply with rotate matrix //
         transformation_matrix = glm::rotate(transformation_matrix, glm::radians(theta), glm::normalize(glm::vec3(axis_x, axis_y, axis_z)));
-
+        
+        unsigned int projectionLoc = glGetUniformLocation(shaderProg, "projection");
+        glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
         unsigned int transformLoc = glGetUniformLocation(shaderProg, "transform");
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transformation_matrix));
