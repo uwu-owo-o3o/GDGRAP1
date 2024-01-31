@@ -181,7 +181,7 @@ int main() {
         x3 = x_mod3;
         y3 = y_mod3;
 
-        //theta += 0.05f; // increment theta for rotation matrix so bunny spins in place
+        theta += 0.05f; // increment theta for rotation matrix so bunny spins in place
 
 
         // start with translation matrix //
