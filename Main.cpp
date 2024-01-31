@@ -18,7 +18,13 @@ float x_mod = 0;
 void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
     if (key == GLFW_KEY_D && action == GLFW_PRESS) {
+        std::cout << "You pressed D" << std::endl;
         x_mod += 0.1f;
+    }
+
+    if (key == GLFW_KEY_A && action == GLFW_PRESS) {
+        std::cout << "You pressed A" << std::endl;
+        x_mod -= 0.1f;
     }
 }
 
@@ -37,7 +43,7 @@ int main() {
 
     glfwMakeContextCurrent(window);
     gladLoadGL();
-    //glfwSetKeyCallback(window, Key_Callback);
+    glfwSetKeyCallback(window, Key_Callback);
 
     std::fstream vertSrc("Shaders/sample.vert");
     std::stringstream vertBuff;
@@ -136,17 +142,15 @@ int main() {
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
-     
         // start with translation matrix //
         glm::mat4 transformation_matrix = glm::translate(identity_matrix, glm::vec3(x, y, z));
-
 
         // multiply matrix with scale matrix //
         transformation_matrix = glm::scale(transformation_matrix, glm::vec3(scale_x, scale_y, scale_z));
 
         // multiply with rotate matrix //
         transformation_matrix = glm::rotate(transformation_matrix, glm::radians(theta), glm::normalize(glm::vec3(axis_x, axis_y, axis_z)));
-
+        
 
         unsigned int transformLoc = glGetUniformLocation(shaderProg, "transform");
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transformation_matrix));
@@ -155,7 +159,6 @@ int main() {
         glBindVertexArray(VAO);
 
         glDrawElements(GL_TRIANGLES, mesh_indices.size(), GL_UNSIGNED_INT, 0);
-
 
         glEnd();
 
