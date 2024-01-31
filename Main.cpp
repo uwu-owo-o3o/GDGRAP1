@@ -15,6 +15,10 @@
 #include "tiny_obj_loader.h"
 
 // when submitting .exe on release, put 3D folder in the Release folder //
+float getPolarPointDirection (float cartesianX, float cartesianY) {
+    float direction = atan(cartesianY/cartesianX);
+    return direction;
+}
 
 int main() {
     GLFWwindow* window;
@@ -22,7 +26,7 @@ int main() {
     if (!glfwInit())
         return -1;
 
-    window = glfwCreateWindow(900, 900, "Ong, Lance", NULL, NULL);
+    window = glfwCreateWindow(600, 600, "Ong, Lance", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -73,17 +77,6 @@ int main() {
         mesh_indices.push_back(shapes[0].mesh.indices[i].vertex_index);
     }
 
-    GLfloat vertices[]{
-        // x,    y,    z 
-          0.f, 0.5f, 0.f,
-          -0.5f, -0.5f, 0.f,
-          0.5f,   -0.5f, 0.f
-    };
-
-    GLuint indices[]{
-        0, 1, 2
-    };
-
     GLuint VAO, VBO, EBO;
 
     glGenVertexArrays(1, &VAO); // line responsible for VAO
@@ -113,8 +106,14 @@ int main() {
     glm::mat4 identity_matrix = glm::mat4(1.0f);
 
     float x = 0.0f;
-    float y = 0.0f;
+    float y = 0.5f;
     float z = 0.0f;
+
+    float x2 = -0.5f;
+    float y2 = -0.5f;
+
+    float x3 = 0.5f;
+    float y3 = -0.5f;
 
     float scale_x = 0.5f;
     float scale_y = 0.5f;
@@ -125,21 +124,23 @@ int main() {
     float axis_y = 0.f;
     float axis_z = 1.f;
 
-    float polar_theta = 0.0f;
+    float polar_theta = 90.0f;
+    float polar_theta2 = getPolarPointDirection(x2, y2);
+    float polar_theta3 = getPolarPointDirection(x3, y3);
 
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
-        
+
         // use polar coordinate system instead of cartesian coordinate system //
 
         // conversion of polar to cartesian //
         float radian_theta = (polar_theta / 180) * 3.14;
-        float x_mod = 0.55f * cos(radian_theta);
-        float y_mod = 0.55f * sin(radian_theta);
+        float x_mod = 0.5f * cos(radian_theta);
+        float y_mod = 0.5f * sin(radian_theta);
 
         // increment angle so it spins //
-        polar_theta += 0.05f;
+        polar_theta += 0.03f;
 
         // if angle hits 360, reset to 0 //
         if (polar_theta == 360.0f) {
@@ -150,7 +151,38 @@ int main() {
         x = x_mod;
         y = y_mod;
 
-        theta += 0.05f; // increment theta for rotation matrix so bunny spins in place
+        float radian_theta2 = (polar_theta2 / 180) * 3.14;
+        float x_mod2 = -0.35f * cos(radian_theta2);
+        float y_mod2 = -0.35f * sin(radian_theta2);
+        
+        // increment angle so it spins //
+        polar_theta2 += 0.03f;
+
+        // if angle hits 360, reset to 0 //
+        if (polar_theta2 == 360.0f) {
+            polar_theta2 = 0.0f;
+        }
+
+        x2 = x_mod2;
+        y2 = y_mod2;
+
+        float radian_theta3 = (polar_theta3 / 180) * 3.14;
+        float x_mod3 =  0.40f * cos(radian_theta3);
+        float y_mod3 = 0.40f * sin(radian_theta3);
+
+        // increment angle so it spins //
+        polar_theta3 += 0.03f;
+
+        // if angle hits 360, reset to 0 //
+        if (polar_theta3 == 360.0f) {
+            polar_theta3 = 0.0f;
+        }
+
+        x3 = x_mod3;
+        y3 = y_mod3;
+
+        //theta += 0.05f; // increment theta for rotation matrix so bunny spins in place
+
 
         // start with translation matrix //
         glm::mat4 transformation_matrix = glm::translate(identity_matrix, glm::vec3(x, y, z));
@@ -164,8 +196,27 @@ int main() {
         unsigned int transformLoc = glGetUniformLocation(shaderProg, "transform");
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transformation_matrix));
 
+
         glUseProgram(shaderProg);
         glBindVertexArray(VAO);
+
+        glDrawElements(GL_TRIANGLES, mesh_indices.size(), GL_UNSIGNED_INT, 0);
+
+        glm::mat4 transformation_matrix2 = glm::translate(identity_matrix, glm::vec3(x2, y2, z));
+        transformation_matrix2 = glm::scale(transformation_matrix2, glm::vec3(scale_x, scale_y, scale_z));
+        transformation_matrix2 = glm::rotate(transformation_matrix2, glm::radians(theta), glm::normalize(glm::vec3(axis_x, axis_y, axis_z)));
+        transformLoc = glGetUniformLocation(shaderProg, "transform");
+
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transformation_matrix2));
+
+        glDrawElements(GL_TRIANGLES, mesh_indices.size(), GL_UNSIGNED_INT, 0);
+
+        glm::mat4 transformation_matrix3 = glm::translate(identity_matrix, glm::vec3(x3, y3, z));
+        transformation_matrix3 = glm::scale(transformation_matrix3, glm::vec3(scale_x, scale_y, scale_z));
+        transformation_matrix3 = glm::rotate(transformation_matrix3, glm::radians(theta), glm::normalize(glm::vec3(axis_x, axis_y, axis_z)));
+        transformLoc = glGetUniformLocation(shaderProg, "transform");
+
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transformation_matrix3));
 
         glDrawElements(GL_TRIANGLES, mesh_indices.size(), GL_UNSIGNED_INT, 0);
 
@@ -173,7 +224,7 @@ int main() {
 
         glfwSwapBuffers(window);
 
-        glfwPollEvents();    
+        glfwPollEvents();
     }
 
     glDeleteVertexArrays(1, &VAO);
