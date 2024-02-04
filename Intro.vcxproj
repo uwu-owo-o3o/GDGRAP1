@@ -141,8 +141,10 @@
   <ItemGroup>
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Model\Bunny.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Model\Bunny.hpp" />
     <ClInclude Include="tiny_obj_loader.h" />
   </ItemGroup>
   <ItemGroup>
