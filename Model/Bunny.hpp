@@ -43,7 +43,7 @@ namespace models {
 			Bunny();
 		public:
 			void calculateTransformMatrix();
-			void updateTransformation();
+			void updateTransformation(CalledKey eKey);
 
 		public:
 			void setTranslateVar(char cVar, float fValue);

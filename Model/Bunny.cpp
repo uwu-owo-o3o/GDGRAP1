@@ -34,7 +34,48 @@ void Bunny::calculateTransformMatrix() {
 	this->transformation_matrix = glm::rotate(this->transformation_matrix, glm::radians(this->fTheta), glm::normalize(glm::vec3(this->fAxis_X, this->fAxis_Y, this->fAxis_Z)));
 }
 
-void Bunny::updateTransformation() {
+void Bunny::updateTransformation(CalledKey eKey) {
+	switch (eKey) {
+	case GLFW_KEY_W:
+		this->fTranslate_Y += 0.5f;
+		break;
+	case GLFW_KEY_A:
+		this->fTranslate_X -= 0.5f;
+		break;
+	case GLFW_KEY_S:
+		this->fTranslate_Y -= 0.5f;
+		break;
+	case GLFW_KEY_D:
+		this->fTranslate_X += 0.5f;
+		break;
+	case GLFW_KEY_LEFT:
+		this->fTheta += 1.0f;
+		break;
+	case GLFW_KEY_RIGHT:
+		keyVar = CalledKey::ROTATE_RIGHT;
+		break;
+	case GLFW_KEY_UP:
+		keyVar = CalledKey::ROTATE_UP;
+		break;
+	case GLFW_KEY_DOWN:
+		keyVar = CalledKey::ROTATE_DOWN;
+		break;
+	case GLFW_KEY_E:
+		keyVar = CalledKey::SCALEUP_E;
+		break;
+	case GLFW_KEY_Q:
+		keyVar = CalledKey::SCALEDOWN_Q;
+		break;
+	case GLFW_KEY_Z:
+		keyVar = CalledKey::ZOOMIN_Z;
+		break;
+	case GLFW_KEY_X:
+		keyVar = CalledKey::ZOOMOUT_X;
+		break;
+	}
+
+
+
 }
 
 
