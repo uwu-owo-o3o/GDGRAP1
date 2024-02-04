@@ -51,27 +51,27 @@ void Bunny::updateTransformation(CalledKey eKey) {
 	case GLFW_KEY_LEFT:
 		this->fTheta += 1.0f;
 		break;
-	case GLFW_KEY_RIGHT:
-		keyVar = CalledKey::ROTATE_RIGHT;
-		break;
-	case GLFW_KEY_UP:
-		keyVar = CalledKey::ROTATE_UP;
-		break;
-	case GLFW_KEY_DOWN:
-		keyVar = CalledKey::ROTATE_DOWN;
-		break;
-	case GLFW_KEY_E:
-		keyVar = CalledKey::SCALEUP_E;
-		break;
-	case GLFW_KEY_Q:
-		keyVar = CalledKey::SCALEDOWN_Q;
-		break;
-	case GLFW_KEY_Z:
-		keyVar = CalledKey::ZOOMIN_Z;
-		break;
-	case GLFW_KEY_X:
-		keyVar = CalledKey::ZOOMOUT_X;
-		break;
+	//case GLFW_KEY_RIGHT:
+	//	keyVar = CalledKey::ROTATE_RIGHT;
+	//	break;
+	//case GLFW_KEY_UP:
+	//	keyVar = CalledKey::ROTATE_UP;
+	//	break;
+	//case GLFW_KEY_DOWN:
+	//	keyVar = CalledKey::ROTATE_DOWN;
+	//	break;
+	//case GLFW_KEY_E:
+	//	keyVar = CalledKey::SCALEUP_E;
+	//	break;
+	//case GLFW_KEY_Q:
+	//	keyVar = CalledKey::SCALEDOWN_Q;
+	//	break;
+	//case GLFW_KEY_Z:
+	//	keyVar = CalledKey::ZOOMIN_Z;
+	//	break;
+	//case GLFW_KEY_X:
+	//	keyVar = CalledKey::ZOOMOUT_X;
+	//	break;
 	}
 
 
