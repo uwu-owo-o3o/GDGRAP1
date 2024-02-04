@@ -18,6 +18,7 @@ CalledKey keyVar = CalledKey::NONE;
 void processCalledKey(int key) {
     switch (key) {
         case GLFW_KEY_W:
+            std::cout << "CALLED W KEY!" << std::endl;
             keyVar = CalledKey::MOVE_W;
             break;
         case GLFW_KEY_A:
@@ -59,14 +60,11 @@ void processCalledKey(int key) {
 
 void Key_Callback (GLFWwindow* window, int key, int scancode, int action, int mods) {
 
-    if (action == GLFW_PRESS || action == GLFW_REPEAT) {
+    if (action == GLFW_PRESS) {
+        std::cout << "ENTERED HERE" << std::endl;
         processCalledKey(key);
     }
 
-    if (action == GLFW_RELEASE) {
-        keyVar = CalledKey::NONE;
-    }
-  
 }
 
 int main(){
@@ -172,15 +170,8 @@ int main(){
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        //// start with translation matrix //
-        //glm::mat4 transformation_matrix = glm::translate(identity_matrix, glm::vec3(bunnyModel.getTranslateVar('X'), bunnyModel.getTranslateVar('Y'), bunnyModel.getTranslateVar('Z')));
+        bunnyModel.updateTransformation(keyVar);
 
-        //// multiply matrix with scale matrix //
-        //transformation_matrix = glm::scale(transformation_matrix, glm::vec3(bunnyModel.getScaleVar('X'), bunnyModel.getScaleVar('Y'), bunnyModel.getScaleVar('Z')));
-
-        //// multiply with rotate matrix //
-        //transformation_matrix = glm::rotate(transformation_matrix, glm::radians(bunnyModel.getRotateVar('T')), glm::normalize(glm::vec3(bunnyModel.getRotateVar('X'), bunnyModel.getRotateVar('Y'), bunnyModel.getRotateVar('Z'))));
-        
         bunnyModel.calculateTransformMatrix();
 
         unsigned int projectionLoc = glGetUniformLocation(shaderProg, "projection");
@@ -199,13 +190,6 @@ int main(){
 
         glfwSwapBuffers(window);
         glfwPollEvents();
-
-        int state = glfwGetKey(window, GLFW_KEY_D);
-
-        if (state == GLFW_PRESS) {
-            std::cout << "listened and D key has been pressed!" << std::endl;
-        }
-
     }
     
     glDeleteVertexArrays(1, &VAO);

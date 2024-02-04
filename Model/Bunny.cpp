@@ -37,10 +37,10 @@ void Bunny::calculateTransformMatrix() {
 void Bunny::updateTransformation(CalledKey eKey) {
 	switch (eKey) {
 	case GLFW_KEY_W:
-		this->fTranslate_Y += 0.5f;
+		this->fTranslate_Y -= 10.f;
 		break;
 	case GLFW_KEY_A:
-		this->fTranslate_X -= 0.5f;
+		this->fTranslate_X += 0.5f;
 		break;
 	case GLFW_KEY_S:
 		this->fTranslate_Y -= 0.5f;
@@ -49,38 +49,45 @@ void Bunny::updateTransformation(CalledKey eKey) {
 		this->fTranslate_X += 0.5f;
 		break;
 	case GLFW_KEY_LEFT:
-		this->fTheta += 1.0f;
+		this->fAxis_X = 0.f;
+		this->fAxis_Y = 1.f;
+		this->fAxis_Z = 0.f;
+		this->fTheta -= 20.0f;
 		break;
-	//case GLFW_KEY_RIGHT:
-	//	keyVar = CalledKey::ROTATE_RIGHT;
-	//	break;
-	//case GLFW_KEY_UP:
-	//	keyVar = CalledKey::ROTATE_UP;
-	//	break;
-	//case GLFW_KEY_DOWN:
-	//	keyVar = CalledKey::ROTATE_DOWN;
-	//	break;
-	//case GLFW_KEY_E:
-	//	keyVar = CalledKey::SCALEUP_E;
-	//	break;
-	//case GLFW_KEY_Q:
-	//	keyVar = CalledKey::SCALEDOWN_Q;
-	//	break;
-	//case GLFW_KEY_Z:
-	//	keyVar = CalledKey::ZOOMIN_Z;
-	//	break;
-	//case GLFW_KEY_X:
-	//	keyVar = CalledKey::ZOOMOUT_X;
-	//	break;
+	case GLFW_KEY_RIGHT:
+		this->fAxis_X = 0.f;
+		this->fAxis_Y = 1.f;
+		this->fAxis_Z = 0.f;
+		this->fTheta += 20.0f;
+		break;
+	case GLFW_KEY_UP:
+		this->fAxis_X = 1.f;
+		this->fAxis_Y = 0.f;
+		this->fAxis_Z = 0.f;
+		this->fTheta -= 10.0f;
+		break;
+	case GLFW_KEY_DOWN:
+		this->fAxis_X = 1.f;
+		this->fAxis_Y = 0.f;
+		this->fAxis_Z = 0.f;
+		this->fTheta += 10.0f;
+		break;
+	case GLFW_KEY_E:
+		this->fScale_X += 3.0f;
+		this->fScale_Y += 3.0f;
+		break;
+	case GLFW_KEY_Q:
+		this->fScale_X -= 3.0f;
+		this->fScale_Y -= 3.0f;
+		break;
+	case GLFW_KEY_Z:
+		//keyVar = CalledKey::ZOOMIN_Z;
+		break;
+	case GLFW_KEY_X:
+		//keyVar = CalledKey::ZOOMOUT_X;
+		break;
 	}
-
-
-
 }
-
-
-
-
 
 void Bunny::setTranslateVar(char cVar, float fValue) {
 	switch (cVar) {
