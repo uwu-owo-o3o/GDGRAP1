@@ -11,6 +11,9 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include "tiny_obj_loader.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 // when submitting .exe on release, put 3D folder in the Release folder //
 float x_mod = 0;
 float z_mod = -2.f;
@@ -85,7 +88,7 @@ int main(){
 
     glLinkProgram(shaderProg);
 
-    std::string path = "3D/bunny.obj";
+    std::string path = "3D/myCube.obj";
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> material;
     std::string warning, error;
@@ -137,18 +140,18 @@ int main(){
 
     glm::mat4 identity_matrix = glm::mat4(1.0f);
 
-    float x = 0; 
-    float y = 0;
+    float x = 0.f; 
+    float y = 0.f;
     float z = -2.f;
 
-    float scale_x = 5;
-    float scale_y = 5;
-    float scale_z = 1;
+    float scale_x = 3.f;
+    float scale_y = 3.f;
+    float scale_z = 1.f;
 
-    float theta = 90;
-    float axis_x = 0;
-    float axis_y = 1;
-    float axis_z = 0;
+    float theta = 60.f;
+    float axis_x = 0.f;
+    float axis_y = 1.f;
+    float axis_z = 0.f;
     
     /*glm::mat4 projectionMatrix = glm::ortho(
         -2.0f, // Left
@@ -169,11 +172,11 @@ int main(){
     );
 
     // shortcut is through glm::lookat() for the camera, 1st param is eye, 2nd param is center, and 3rd is WorldUp variable //
-    glm::vec3 camera(x_mod, 0, 10.f);
+    glm::vec3 camera(0, 0, 10.f);
     glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), camera * -1.0f);
 
     glm::vec3 WorldUp = glm::vec3(0, 1.0f, 0);
-    glm::vec3 Center = glm::vec3(0, 3.f, 0);
+    glm::vec3 Center = glm::vec3(0, 0.f, 0);
     glm::vec3 Front = glm::vec3(Center - camera);
     Front = glm::normalize(Front);
 
