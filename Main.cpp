@@ -13,12 +13,13 @@
 
 using namespace models;
 
+// [CalledKey] is an enum used as a flag to let the program know which trasformation variables we want to be modified //
+
 CalledKey keyVar = CalledKey::NONE;
 
 void processCalledKey(int key) {
     switch (key) {
         case GLFW_KEY_W:
-            std::cout << "CALLED W KEY!" << std::endl;
             keyVar = CalledKey::MOVE_W;
             break;
         case GLFW_KEY_A:
@@ -59,12 +60,9 @@ void processCalledKey(int key) {
 
 
 void Key_Callback (GLFWwindow* window, int key, int scancode, int action, int mods) {
-
-    if (action == GLFW_PRESS) {
-        std::cout << "ENTERED HERE" << std::endl;
+    if (action == GLFW_PRESS || action == GLFW_REPEAT) {
         processCalledKey(key);
     }
-
 }
 
 int main(){
@@ -123,27 +121,27 @@ int main(){
 
     bool success = tinyobj::LoadObj(&attributes, &shapes, &material, &warning, &error, path.c_str());
 
-    std::vector<GLuint> mesh_indices; // EBO of 3d object
-    for (int i = 0; i < shapes[0].mesh.indices.size(); i++) { // get EBO indices array
+    std::vector<GLuint> mesh_indices; 
+    for (int i = 0; i < shapes[0].mesh.indices.size(); i++) { 
         mesh_indices.push_back(shapes[0].mesh.indices[i].vertex_index);
     }
     GLuint VAO, VBO, EBO;
 
-    glGenVertexArrays(1, &VAO); // line responsible for VAO
-    glGenBuffers(1, &VBO); // line responsible for VBO
+    glGenVertexArrays(1, &VAO); 
+    glGenBuffers(1, &VBO); 
     glGenBuffers(1, &EBO);
 
-    glBindVertexArray(VAO); // assigns VAO currently being edited
-    glBindBuffer(GL_ARRAY_BUFFER, VBO); // assigns VBO currently being edited and attaches VBO to VAO
+    glBindVertexArray(VAO); 
+    glBindBuffer(GL_ARRAY_BUFFER, VBO); 
 
     // the VBO's contents:
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GL_FLOAT) * attributes.vertices.size(), &attributes.vertices[0], GL_STATIC_DRAW); // sizeof(vertices) -> size of array in bytes, GL_STATIC_DRAW as the model doesn't move
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GL_FLOAT) * attributes.vertices.size(), &attributes.vertices[0], GL_STATIC_DRAW); 
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-    // the EBO;s contents:
+    // the EBO'ss contents:
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * mesh_indices.size(), mesh_indices.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
@@ -153,26 +151,21 @@ int main(){
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+    Bunny bunnyModel = Bunny();
+
     glm::mat4 identity_matrix = glm::mat4(1.0f);
     
-    glm::mat4 projectionMatrix = glm::perspective(
-        glm::radians(60.f), // fov
-        // zoom in - fov
-        // zoom out + fov
-        window_height / window_width, // aspect ratio
-        0.1f, //zNear [NOTE]: zNear cannot be >= 0 !
-        100.f //zFar
-    );
-
-    Bunny bunnyModel = Bunny();
+    glm::mat4 projectionMatrix = glm::perspective(glm::radians(bunnyModel.getPerspectiveTheta()), window_height / window_width, 0.1f, 100.f);
 
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        bunnyModel.updateTransformation(keyVar);
+        bunnyModel.updateTransformation(&keyVar); // updates the values that are passed onto the respective matrices //
 
-        bunnyModel.calculateTransformMatrix();
+        bunnyModel.calculateTransformMatrix(); // calculates for the final transformation matrix //
+
+        projectionMatrix = glm::perspective(glm::radians(bunnyModel.getPerspectiveTheta()), window_height / window_width, 0.1f, 100.f); // updates the theta value or FOV to zoom in and zoom out //
 
         unsigned int projectionLoc = glGetUniformLocation(shaderProg, "projection");
         glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projectionMatrix));

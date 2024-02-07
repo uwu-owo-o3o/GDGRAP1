@@ -1,6 +1,7 @@
 #ifndef BUNNY_HPP
 #define BUNNY_HPP
 
+#include "iostream"
 #include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -38,12 +39,14 @@ namespace models {
 			float fAxis_Y;
 			float fAxis_Z;
 			
+			float fPerspectiveTheta;
 			glm::mat4 transformation_matrix;
+
 		public:
 			Bunny();
 		public:
 			void calculateTransformMatrix();
-			void updateTransformation(CalledKey eKey);
+			void updateTransformation(CalledKey* eKey);
 
 		public:
 			void setTranslateVar(char cVar, float fValue);
@@ -52,6 +55,7 @@ namespace models {
 			float getScaleVar(char cVar);
 			void setRotateVar(char cVar, float fValue);
 			float getRotateVar(char cVar);
+			float getPerspectiveTheta();
 			glm::mat4* getMatrix();
 	};
 }

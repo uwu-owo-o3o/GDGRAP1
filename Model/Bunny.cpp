@@ -7,88 +7,94 @@ Bunny::Bunny() {
 	this->fTranslate_Y = 0.0f;
 	this->fTranslate_Z = -2.0f;
 
-	this->fScale_X = 5.0f;
-	this->fScale_Y = 5.0f;
+	this->fScale_X = 3.0f;
+	this->fScale_Y = 3.0f;
 	this->fScale_Z = 1.0f;
 
-	this->fTheta = 45.0f;
+	this->fTheta = 90.0f;
 	this->fAxis_X = 0.0f;
 	this->fAxis_Y = 1.0f;
 	this->fAxis_Z = 0.0f;
 
+	this->fPerspectiveTheta = 60.0f;
 	this->transformation_matrix = glm::mat4(1.0f);
 
 }
 
+// calculates for the final transformation matrix to be used in the program //
 void Bunny::calculateTransformMatrix() {
 
 	glm::mat4 identity_matrix = glm::mat4(1.0f);
 
-	// start with translation matrix //
 	this->transformation_matrix = glm::translate(identity_matrix, glm::vec3(this->fTranslate_X, this->fTranslate_Y, this->fTranslate_Z));
 
-	// multiply matrix with scale matrix //
 	this->transformation_matrix = glm::scale(this->transformation_matrix, glm::vec3(this->fScale_X, this->fScale_Y, this->fScale_Z));
 
-	// multiply with rotate matrix //
 	this->transformation_matrix = glm::rotate(this->transformation_matrix, glm::radians(this->fTheta), glm::normalize(glm::vec3(this->fAxis_X, this->fAxis_Y, this->fAxis_Z)));
 }
 
-void Bunny::updateTransformation(CalledKey eKey) {
-	switch (eKey) {
-	case GLFW_KEY_W:
-		this->fTranslate_Y -= 10.f;
-		break;
-	case GLFW_KEY_A:
-		this->fTranslate_X += 0.5f;
-		break;
-	case GLFW_KEY_S:
-		this->fTranslate_Y -= 0.5f;
-		break;
-	case GLFW_KEY_D:
-		this->fTranslate_X += 0.5f;
-		break;
-	case GLFW_KEY_LEFT:
-		this->fAxis_X = 0.f;
-		this->fAxis_Y = 1.f;
-		this->fAxis_Z = 0.f;
-		this->fTheta -= 20.0f;
-		break;
-	case GLFW_KEY_RIGHT:
-		this->fAxis_X = 0.f;
-		this->fAxis_Y = 1.f;
-		this->fAxis_Z = 0.f;
-		this->fTheta += 20.0f;
-		break;
-	case GLFW_KEY_UP:
-		this->fAxis_X = 1.f;
-		this->fAxis_Y = 0.f;
-		this->fAxis_Z = 0.f;
-		this->fTheta -= 10.0f;
-		break;
-	case GLFW_KEY_DOWN:
-		this->fAxis_X = 1.f;
-		this->fAxis_Y = 0.f;
-		this->fAxis_Z = 0.f;
-		this->fTheta += 10.0f;
-		break;
-	case GLFW_KEY_E:
-		this->fScale_X += 3.0f;
-		this->fScale_Y += 3.0f;
-		break;
-	case GLFW_KEY_Q:
-		this->fScale_X -= 3.0f;
-		this->fScale_Y -= 3.0f;
-		break;
-	case GLFW_KEY_Z:
-		//keyVar = CalledKey::ZOOMIN_Z;
-		break;
-	case GLFW_KEY_X:
-		//keyVar = CalledKey::ZOOMOUT_X;
-		break;
-	}
+//receives the passed flag to update the values used in a transform matrix//
+void Bunny::updateTransformation(CalledKey* eKey) {
+	
+	switch (*eKey) {
+		case CalledKey::MOVE_W:
+				this->fTranslate_Y += 0.1f;
+				break;
+			case CalledKey::MOVE_A:
+				this->fTranslate_X -= 0.1f;
+				break;
+			case CalledKey::MOVE_S:
+				this->fTranslate_Y -= 0.1f;
+				break;
+			case CalledKey::MOVE_D:
+				this->fTranslate_X += 0.1f;
+				break;
+			case CalledKey::ROTATE_LEFT:
+				this->fAxis_X = 0.f;
+				this->fAxis_Y = 1.f;
+				this->fAxis_Z = 0.f;
+				this->fTheta -= 20.0f;
+				break;
+			case CalledKey::ROTATE_RIGHT:
+				this->fAxis_X = 0.f;
+				this->fAxis_Y = 1.f;
+				this->fAxis_Z = 0.f;
+				this->fTheta += 20.0f;
+				break;
+			case CalledKey::ROTATE_UP:
+				this->fAxis_X = 1.f;
+				this->fAxis_Y = 0.f;
+				this->fAxis_Z = 0.f;
+				this->fTheta -= 10.0f;
+				break;
+			case CalledKey::ROTATE_DOWN:
+				this->fAxis_X = 1.f;
+				this->fAxis_Y = 0.f;
+				this->fAxis_Z = 0.f;
+				this->fTheta += 10.0f;
+				break;
+			case CalledKey::SCALEUP_E:
+				this->fScale_X += 0.1f;
+				this->fScale_Y += 0.1f;
+				break;
+			case CalledKey::SCALEDOWN_Q:
+				this->fScale_X -= 0.1f;
+				this->fScale_Y -= 0.1f;
+				break;
+			case CalledKey::ZOOMIN_Z:
+				this->fTheta -= 0.5f;
+				this->fPerspectiveTheta -= 0.5f;
+				break;
+			case CalledKey::ZOOMOUT_X:
+				this->fTheta += 0.5f;
+				this->fPerspectiveTheta += 0.5f;
+				break;
+		}
+
+	*eKey = CalledKey::NONE;
 }
 
+// GETTERS AND SETTERS //
 void Bunny::setTranslateVar(char cVar, float fValue) {
 	switch (cVar) {
 		case 'X':
@@ -173,6 +179,10 @@ float Bunny::getRotateVar(char cVar) {
 	}
 
 	return 0.0f;
+}
+
+float Bunny::getPerspectiveTheta() {
+	return this->fPerspectiveTheta;
 }
 
 glm::mat4* Bunny::getMatrix() {
