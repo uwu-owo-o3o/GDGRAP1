@@ -61,6 +61,7 @@ int main(){
 
     int img_width, img_height, colorChannels;
 
+    stbi_set_flip_vertically_on_load(true);
     unsigned char* tex_bytes = stbi_load("3d/ayaya.png", &img_width, &img_height, &colorChannels, 0);
 
     GLuint texture;
