@@ -168,6 +168,34 @@ int main(){
         100.f //zFar
     );
 
+    // shortcut is through glm::lookat() for the camera, 1st param is eye, 2nd param is center, and 3rd is WorldUp variable //
+    glm::vec3 camera(x_mod, 0, 10.f);
+    glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), camera * -1.0f);
+
+    glm::vec3 WorldUp = glm::vec3(0, 1.0f, 0);
+    glm::vec3 Center = glm::vec3(0, 3.f, 0);
+    glm::vec3 Front = glm::vec3(Center - camera);
+    Front = glm::normalize(Front);
+
+    glm::vec3 Right = glm::normalize(glm::cross(Front, WorldUp));
+    glm::vec3 Up = glm::normalize(glm::cross(Right, Front));
+
+    //setup camera matrix //
+    glm::mat4 cameraOrientation = glm::mat4(1.f);
+    cameraOrientation[0][0] = Right.x;
+    cameraOrientation[1][0] = Right.y;
+    cameraOrientation[2][0] = Right.z;
+
+    cameraOrientation[0][1] = Up.x;
+    cameraOrientation[1][1] = Up.y;
+    cameraOrientation[2][1] = Up.z;
+
+    cameraOrientation[0][2] = -Front.x;
+    cameraOrientation[1][2] = -Front.y;
+    cameraOrientation[2][2] = -Front.z;
+
+    glm::mat4 viewMatrix = cameraOrientation * cameraPositionMatrix;
+
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -189,6 +217,9 @@ int main(){
 
         unsigned int transformLoc = glGetUniformLocation(shaderProg, "transform");
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transformation_matrix));
+        
+        unsigned int viewLoc = glGetUniformLocation(shaderProg, "view");
+        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 
         glUseProgram(shaderProg);
         glBindVertexArray(VAO);
