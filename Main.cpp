@@ -72,6 +72,7 @@ int main(){
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_width, img_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_bytes);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(tex_bytes);
+    glEnable(GL_DEPTH_TEST); // allows the 3d model's rendering for the "back" part of the model to disappear
 
     std::fstream vertSrc("Shaders/sample.vert");
     std::stringstream vertBuff;
@@ -235,7 +236,7 @@ int main(){
 
     while (!glfwWindowShouldClose(window))
     {
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         z = z_mod;
         //theta = x_mod;
         theta += 0.001f;
