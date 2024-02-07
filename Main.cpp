@@ -57,8 +57,20 @@ int main(){
     glfwMakeContextCurrent(window);
     gladLoadGL();
 
-
     glfwSetKeyCallback(window, Key_Callback);
+
+    int img_width, img_height, colorChannels;
+
+    unsigned char* tex_bytes = stbi_load("3d/ayaya.png", &img_width, &img_height, &colorChannels, 0);
+
+    GLuint texture;
+    glGenTextures(1, &texture);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_width, img_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_bytes);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(tex_bytes);
 
     std::fstream vertSrc("Shaders/sample.vert");
     std::stringstream vertBuff;
@@ -96,6 +108,18 @@ int main(){
 
     bool success = tinyobj::LoadObj(&attributes, &shapes, &material, &warning, &error, path.c_str());
 
+    GLfloat UV[]{
+        0.f, 1.f,
+        0.f, 0.f,
+        1.f, 1.f,
+        1.f, 0.f,
+        1.f, 1.f,
+        1.f, 0.f,
+        0.f, 1.f,
+        0.f, 0.f
+    };
+
+
     std::vector<GLuint> mesh_indices; // EBO of 3d object
     for (int i = 0; i < shapes[0].mesh.indices.size(); i++) { // get EBO indices array
         mesh_indices.push_back(shapes[0].mesh.indices[i].vertex_index);
@@ -112,10 +136,11 @@ int main(){
         0, 1, 2
     };
     
-    GLuint VAO, VBO, EBO;
+    GLuint VAO, VBO, EBO, VBO_UV;
 
     glGenVertexArrays(1, &VAO); // line responsible for VAO
     glGenBuffers(1, &VBO); // line responsible for VBO
+    glGenBuffers(1, &VBO_UV);
     glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO); // assigns VAO currently being edited
@@ -132,11 +157,19 @@ int main(){
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * mesh_indices.size(), mesh_indices.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, VBO_UV);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * (sizeof(UV) / sizeof(UV[0])), &UV[0], GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(2);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+
 
     glm::mat4 identity_matrix = glm::mat4(1.0f);
 
@@ -203,7 +236,8 @@ int main(){
     {
         glClear(GL_COLOR_BUFFER_BIT);
         z = z_mod;
-        theta = x_mod;
+        //theta = x_mod;
+        theta += 0.001f;
 
         // start with translation matrix //
         glm::mat4 transformation_matrix = glm::translate(identity_matrix, glm::vec3(x, y, z));
@@ -224,11 +258,14 @@ int main(){
         unsigned int viewLoc = glGetUniformLocation(shaderProg, "view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 
+        GLuint tex0Address = glGetUniformLocation(shaderProg, "tex0");
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glUniform1i(tex0Address, 0);
+
         glUseProgram(shaderProg);
         glBindVertexArray(VAO);
-       
+        
         glDrawElements(GL_TRIANGLES, mesh_indices.size(), GL_UNSIGNED_INT, 0);
-
 
         glEnd();
 
