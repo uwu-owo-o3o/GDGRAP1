@@ -209,8 +209,12 @@ int main(){
     // lighting things
     glm::vec3 lightPos = glm::vec3(-10, 3, 0.0);
     glm::vec3 lightColor = glm::vec3(1, 1, 1);
-    float ambientStr = 0.1f; // keep strength low
+
+    float ambientStr = 0.25f; // keep strength low, preferably less than 1
     glm::vec3 ambientColor = lightColor;
+
+    float specStr = 0.5f;
+    float specPhong = 16; // usual range is 16 to 25
 
     while (!glfwWindowShouldClose(window))
     {
@@ -253,6 +257,16 @@ int main(){
 
         GLuint ambientColorAddress = glGetUniformLocation(shaderProg, "ambientColor");
         glUniform3fv(ambientColorAddress, 1, glm::value_ptr(ambientColor));
+
+        GLuint camerPosAddress = glGetUniformLocation(shaderProg, "cameraPos");
+        glUniform3fv(camerPosAddress, 1, glm::value_ptr(cameraPositionMatrix));
+
+        GLuint specStrAddress = glGetUniformLocation(shaderProg, "specStr");
+        glUniform1f(specStrAddress, specStr);
+
+        GLuint specPhongAddress = glGetUniformLocation(shaderProg, "specPhong");
+        glUniform1f(specPhongAddress, specPhong);
+
 
         glUseProgram(shaderProg);
         glBindVertexArray(VAO);
