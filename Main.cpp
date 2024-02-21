@@ -160,8 +160,8 @@ int main(){
     float y = 0.f;
     float z = 8.2;
 
-    float scale_x = 0.5f;
-    float scale_y = 0.5f;
+    float scale_x = 1.f;
+    float scale_y = 1.f;
     float scale_z = 1.f;
 
     float theta = 90.f;
@@ -180,7 +180,7 @@ int main(){
 
     // shortcut is through glm::lookat() for the camera, 1st param is eye, 2nd param is center, and 3rd is WorldUp variable //
     glm::vec3 camera(0, 0, 10.f);
-    glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), camera * -10.5f);
+    glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), camera * -10.f);
 
     glm::vec3 WorldUp = glm::vec3(0, 1.0f, 0);
     glm::vec3 Center = glm::vec3(0, 0.f, 0);
@@ -206,12 +206,16 @@ int main(){
 
     glm::mat4 viewMatrix = cameraOrientation * cameraPositionMatrix;
 
+    // lighting things
+    glm::vec3 lightPos = glm::vec3(-10, 3, 0);
+    glm::vec3 lightColor = glm::vec3(1, 1, 1);
+
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
        // z = z_mod;
         //theta = x_mod;
-        //theta += 0.001f;
+        theta += 0.005f;
 
         // start with translation matrix //
         glm::mat4 transformation_matrix = glm::translate(identity_matrix, glm::vec3(x, y, z));
@@ -236,10 +240,15 @@ int main(){
         glBindTexture(GL_TEXTURE_2D, texture);
         glUniform1i(tex0Address, 0);
 
+        GLuint lightAddress = glGetUniformLocation(shaderProg, "lightPos");
+        glUniform3fv(lightAddress, 1, glm::value_ptr(lightPos));
+
+        GLuint lightColorAddress = glGetUniformLocation(shaderProg, "lightColor");
+        glUniform3fv(lightColorAddress, 1, glm::value_ptr(lightColor));
+
         glUseProgram(shaderProg);
         glBindVertexArray(VAO);
-        
-        /*glDrawElements(GL_TRIANGLES, mesh_indices.size(), GL_UNSIGNED_INT, 0);*/
+       
         glDrawArrays(GL_TRIANGLES, 0, mesh_indices.size() / 8);
 
         glEnd();
