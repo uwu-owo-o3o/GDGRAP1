@@ -158,13 +158,13 @@ int main(){
 
     float x = 0.f; 
     float y = 0.f;
-    float z = 8.2;
+    float z = -2.0f;
 
-    float scale_x = 1.f;
-    float scale_y = 1.f;
-    float scale_z = 1.f;
+    float scale_x = 0.095f;
+    float scale_y = 0.095f;
+    float scale_z = 0.095f;
 
-    float theta = 90.f;
+    float theta = 90.0f;
     float axis_x = 0.f;
     float axis_y = 1.f;
     float axis_z = 0.f;
@@ -180,7 +180,7 @@ int main(){
 
     // shortcut is through glm::lookat() for the camera, 1st param is eye, 2nd param is center, and 3rd is WorldUp variable //
     glm::vec3 camera(0, 0, 10.f);
-    glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), camera * -10.f);
+    glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), camera * -1.0f);
 
     glm::vec3 WorldUp = glm::vec3(0, 1.0f, 0);
     glm::vec3 Center = glm::vec3(0, 0.f, 0);
@@ -207,7 +207,7 @@ int main(){
     glm::mat4 viewMatrix = cameraOrientation * cameraPositionMatrix;
 
     // lighting things
-    glm::vec3 lightPos = glm::vec3(-10, 3, 0);
+    glm::vec3 lightPos = glm::vec3(-10, 3, 0.0);
     glm::vec3 lightColor = glm::vec3(1, 1, 1);
 
     while (!glfwWindowShouldClose(window))
