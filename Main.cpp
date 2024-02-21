@@ -47,7 +47,7 @@ int main(){
     float window_width = 600.f;
     float window_height = 600.f;
 
-    window = glfwCreateWindow(window_width, window_height, "Ong, Lance", NULL, NULL);
+    window = glfwCreateWindow((int)window_width, (int)window_height, "Ong, Lance", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -122,56 +122,38 @@ int main(){
     };
 
 
-    std::vector<GLuint> mesh_indices; // EBO of 3d object
-    for (int i = 0; i < shapes[0].mesh.indices.size(); i++) { // get EBO indices array
-        mesh_indices.push_back(shapes[0].mesh.indices[i].vertex_index);
+    std::vector<GLfloat> mesh_indices;
+    for (int i = 0; i < shapes[0].mesh.indices.size(); i++) {
+        tinyobj::index_t vData = shapes[0].mesh.indices[i];
+        mesh_indices.push_back(attributes.vertices[(vData.vertex_index * 3)]);
+        mesh_indices.push_back(attributes.vertices[(vData.vertex_index * 3) + 1]);
+        mesh_indices.push_back(attributes.vertices[(vData.vertex_index * 3) + 2]);
+        mesh_indices.push_back(attributes.texcoords[(vData.texcoord_index * 2)]);
+        mesh_indices.push_back(attributes.texcoords[(vData.texcoord_index * 2) + 1]);
     }
 
-    GLfloat vertices[]{
-      // x,    y,    z 
-        0.f, 0.5f, 0.f,
-        -0.5f, -0.5f, 0.f,
-        0.5f,   -0.5f, 0.f
-    };
+    GLuint VAO, VBO;
 
-    GLuint indices[]{
-        0, 1, 2
-    };
-    
-    GLuint VAO, VBO, EBO, VBO_UV;
+    GLintptr uvPtr = 3 * sizeof(float); // UV starts at index 3 or the 4th index of our vertex data
 
     glGenVertexArrays(1, &VAO); // line responsible for VAO
     glGenBuffers(1, &VBO); // line responsible for VBO
-    glGenBuffers(1, &VBO_UV);
-    glGenBuffers(1, &EBO);
 
     glBindVertexArray(VAO); // assigns VAO currently being edited
     glBindBuffer(GL_ARRAY_BUFFER, VBO); // assigns VBO currently being edited and attaches VBO to VAO
 
-    // the VBO's contents:
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GL_FLOAT) * attributes.vertices.size(), &attributes.vertices[0], GL_STATIC_DRAW); // sizeof(vertices) -> size of array in bytes, GL_STATIC_DRAW as the model doesn't move
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-
-    // the EBO;s contents:
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * mesh_indices.size(), mesh_indices.data(), GL_STATIC_DRAW);
-
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * mesh_indices.size(), mesh_indices.data(), GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0); // 5 for 5 vertices (X,Y,Z,U,V)
     glEnableVertexAttribArray(0);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, VBO_UV);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * (sizeof(UV) / sizeof(UV[0])), &UV[0], GL_DYNAMIC_DRAW);
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)uvPtr);
     glEnableVertexAttribArray(2);
+
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-
 
     glm::mat4 identity_matrix = glm::mat4(1.0f);
 
@@ -188,15 +170,6 @@ int main(){
     float axis_y = 1.f;
     float axis_z = 0.f;
     
-    /*glm::mat4 projectionMatrix = glm::ortho(
-        -2.0f, // Left
-        2.0f, // Right
-       -2.0f, // Bot
-        2.0f, // Top
-        -1.0f, // zNear
-        1.0f // zFar
-    );*/
-
     glm::mat4 projectionMatrix = glm::perspective(
         glm::radians(60.f), // fov
         // zoom in - fov
@@ -267,7 +240,8 @@ int main(){
         glUseProgram(shaderProg);
         glBindVertexArray(VAO);
         
-        glDrawElements(GL_TRIANGLES, mesh_indices.size(), GL_UNSIGNED_INT, 0);
+        /*glDrawElements(GL_TRIANGLES, mesh_indices.size(), GL_UNSIGNED_INT, 0);*/
+        glDrawArrays(GL_TRIANGLES, 0, mesh_indices.size() / 5);
 
         glEnd();
 
@@ -278,7 +252,6 @@ int main(){
     
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
 
     glfwTerminate();
     return 0;
