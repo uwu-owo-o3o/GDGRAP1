@@ -209,6 +209,8 @@ int main(){
     // lighting things
     glm::vec3 lightPos = glm::vec3(-10, 3, 0.0);
     glm::vec3 lightColor = glm::vec3(1, 1, 1);
+    float ambientStr = 0.1f; // keep strength low
+    glm::vec3 ambientColor = lightColor;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -245,6 +247,12 @@ int main(){
 
         GLuint lightColorAddress = glGetUniformLocation(shaderProg, "lightColor");
         glUniform3fv(lightColorAddress, 1, glm::value_ptr(lightColor));
+
+        GLuint ambientStrAddress = glGetUniformLocation(shaderProg, "ambientStr");
+        glUniform1f(ambientStrAddress, ambientStr);
+
+        GLuint ambientColorAddress = glGetUniformLocation(shaderProg, "ambientColor");
+        glUniform3fv(ambientColorAddress, 1, glm::value_ptr(ambientColor));
 
         glUseProgram(shaderProg);
         glBindVertexArray(VAO);
