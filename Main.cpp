@@ -62,14 +62,14 @@ int main(){
     int img_width, img_height, colorChannels;
 
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* tex_bytes = stbi_load("3d/ayaya.png", &img_width, &img_height, &colorChannels, 0);
+    unsigned char* tex_bytes = stbi_load("3d/partenza.jpg", &img_width, &img_height, &colorChannels, 0);
 
     GLuint texture;
     glGenTextures(1, &texture);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_width, img_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_bytes);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_width, img_height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex_bytes);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(tex_bytes);
     glEnable(GL_DEPTH_TEST); // allows the 3d model's rendering for the "back" part of the model to disappear
@@ -102,7 +102,7 @@ int main(){
 
     glLinkProgram(shaderProg);
 
-    std::string path = "3D/myCube.obj";
+    std::string path = "3D/djSword.obj";
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> material;
     std::string warning, error;
@@ -110,31 +110,26 @@ int main(){
 
     bool success = tinyobj::LoadObj(&attributes, &shapes, &material, &warning, &error, path.c_str());
 
-    GLfloat UV[]{
-        0.f, 1.f,
-        0.f, 0.f,
-        1.f, 1.f,
-        1.f, 0.f,
-        1.f, 1.f,
-        1.f, 0.f,
-        0.f, 1.f,
-        0.f, 0.f
-    };
-
-
     std::vector<GLfloat> mesh_indices;
     for (int i = 0; i < shapes[0].mesh.indices.size(); i++) {
         tinyobj::index_t vData = shapes[0].mesh.indices[i];
+
         mesh_indices.push_back(attributes.vertices[(vData.vertex_index * 3)]);
         mesh_indices.push_back(attributes.vertices[(vData.vertex_index * 3) + 1]);
         mesh_indices.push_back(attributes.vertices[(vData.vertex_index * 3) + 2]);
+
+        mesh_indices.push_back(attributes.normals[(vData.normal_index * 3)]);
+        mesh_indices.push_back(attributes.normals[(vData.normal_index * 3) + 1]);
+        mesh_indices.push_back(attributes.normals[(vData.normal_index * 3) + 2]);
+
         mesh_indices.push_back(attributes.texcoords[(vData.texcoord_index * 2)]);
         mesh_indices.push_back(attributes.texcoords[(vData.texcoord_index * 2) + 1]);
     }
 
     GLuint VAO, VBO;
 
-    GLintptr uvPtr = 3 * sizeof(float); // UV starts at index 3 or the 4th index of our vertex data
+    GLintptr normPtr = 3 * sizeof(float);
+    GLintptr uvPtr = 6 * sizeof(float); // UV starts at index 3 or the 4th index of our vertex data
 
     glGenVertexArrays(1, &VAO); // line responsible for VAO
     glGenBuffers(1, &VBO); // line responsible for VBO
@@ -143,10 +138,14 @@ int main(){
     glBindBuffer(GL_ARRAY_BUFFER, VBO); // assigns VBO currently being edited and attaches VBO to VAO
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * mesh_indices.size(), mesh_indices.data(), GL_DYNAMIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0); // 5 for 5 vertices (X,Y,Z,U,V)
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0); // 5 for 5 vertices (X,Y,Z,U,V)
     glEnableVertexAttribArray(0);
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)uvPtr);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)normPtr); // 5 for 5 vertices (X,Y,Z,U,V)
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)uvPtr);
     glEnableVertexAttribArray(2);
 
 
@@ -159,13 +158,13 @@ int main(){
 
     float x = 0.f; 
     float y = 0.f;
-    float z = -2.f;
+    float z = 8.2;
 
-    float scale_x = 3.f;
-    float scale_y = 3.f;
+    float scale_x = 0.5f;
+    float scale_y = 0.5f;
     float scale_z = 1.f;
 
-    float theta = 60.f;
+    float theta = 90.f;
     float axis_x = 0.f;
     float axis_y = 1.f;
     float axis_z = 0.f;
@@ -181,7 +180,7 @@ int main(){
 
     // shortcut is through glm::lookat() for the camera, 1st param is eye, 2nd param is center, and 3rd is WorldUp variable //
     glm::vec3 camera(0, 0, 10.f);
-    glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), camera * -1.0f);
+    glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), camera * -10.5f);
 
     glm::vec3 WorldUp = glm::vec3(0, 1.0f, 0);
     glm::vec3 Center = glm::vec3(0, 0.f, 0);
@@ -210,9 +209,9 @@ int main(){
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        z = z_mod;
+       // z = z_mod;
         //theta = x_mod;
-        theta += 0.001f;
+        //theta += 0.001f;
 
         // start with translation matrix //
         glm::mat4 transformation_matrix = glm::translate(identity_matrix, glm::vec3(x, y, z));
@@ -241,7 +240,7 @@ int main(){
         glBindVertexArray(VAO);
         
         /*glDrawElements(GL_TRIANGLES, mesh_indices.size(), GL_UNSIGNED_INT, 0);*/
-        glDrawArrays(GL_TRIANGLES, 0, mesh_indices.size() / 5);
+        glDrawArrays(GL_TRIANGLES, 0, mesh_indices.size() / 8);
 
         glEnd();
 
