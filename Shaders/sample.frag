@@ -20,15 +20,17 @@ in vec3 fragPos;
 
 void main()
 {
-    float brightness = 15.f;
+    float brightness = 0.75f;
 
     vec3 normal = normalize(normCoord);
-    vec3 lightDir = normalize(-fragPos);// lightPos - fragPos
+
+    // removed light position as it's not needed for directional light, negated fragPos to "flip" the light //
+    vec3 lightDir = normalize(-fragPos);
 
     float diff =  max(dot(normal, lightDir), 0.0);
 
     // multiply brightness to diffuse as this is the light that is reflected that viewers see //
-    vec3 diffuse = diff * lightColor;
+    vec3 diffuse = diff * lightColor * brightness;
     
     vec3 ambientCol = ambientColor * ambientStr;
 
