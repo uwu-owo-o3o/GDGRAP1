@@ -15,27 +15,36 @@
 #include "stb_image.h"
 
 // when submitting .exe on release, put 3D folder in the Release folder //
-float x_mod = 0;
+float x_mod = 0.f;
+float y_mod = 0.f;
 float z_mod = -2.f;
 
 void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 
-    if (key == GLFW_KEY_D && action == GLFW_PRESS) {
-        x_mod += 20.0f;
+    if (key == GLFW_KEY_D) {
+        x_mod += 0.5f;
     }
 
-    if (key == GLFW_KEY_A && action == GLFW_PRESS) {
-        x_mod -= 20.0f;
+    if (key == GLFW_KEY_A) {
+        x_mod -= 0.5f;
     }
 
-    if (key == GLFW_KEY_W && action == GLFW_PRESS) {
-        std::cout << "pressed W" << std::endl;
+    if (key == GLFW_KEY_W) {
+        y_mod += 0.5f;
+    }
+
+    if (key == GLFW_KEY_S) {
+        y_mod -= 0.5f;
+    }
+
+    if (key == GLFW_KEY_Z) {
+        z_mod += 0.3f;
+    }
+
+    if (key == GLFW_KEY_Q) {
         z_mod -= 0.3f;
     }
 
-    if (key == GLFW_KEY_S && action == GLFW_PRESS) {
-        z_mod += 0.3f;
-    }
 }
 
 int main(){
@@ -207,10 +216,10 @@ int main(){
     glm::mat4 viewMatrix = cameraOrientation * cameraPositionMatrix;
 
     // lighting things
-    glm::vec3 lightPos = glm::vec3(-10, 3, 0.0);
+    glm::vec3 lightPos = glm::vec3(0, 0, 0.0); // -10, 3, 0 //
     glm::vec3 lightColor = glm::vec3(1, 1, 1);
 
-    float ambientStr = 0.25f; // keep strength low, preferably less than 1
+    float ambientStr = 0.000000000025f; // keep strength low, preferably less than 1
     glm::vec3 ambientColor = lightColor;
 
     float specStr = 0.5f;
@@ -219,9 +228,9 @@ int main(){
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-       // z = z_mod;
-        //theta = x_mod;
-        theta += 0.005f;
+        x = x_mod;
+        y = y_mod;
+        z = z_mod;
 
         // start with translation matrix //
         glm::mat4 transformation_matrix = glm::translate(identity_matrix, glm::vec3(x, y, z));

@@ -20,12 +20,16 @@ in vec3 fragPos;
 
 void main()
 {
-    
-    vec3 normal = normalize(normCoord);
-    vec3 lightDir = normalize(lightPos - fragPos);
+    float brightness = 15.f;
 
-    float diff = max(dot(normal, lightDir), 0.0);
+    vec3 normal = normalize(normCoord);
+    vec3 lightDir = normalize(-fragPos);// lightPos - fragPos
+
+    float diff =  max(dot(normal, lightDir), 0.0);
+
+    // multiply brightness to diffuse as this is the light that is reflected that viewers see //
     vec3 diffuse = diff * lightColor;
+    
     vec3 ambientCol = ambientColor * ambientStr;
 
     vec3 viewDir = normalize(cameraPos - fragPos);
