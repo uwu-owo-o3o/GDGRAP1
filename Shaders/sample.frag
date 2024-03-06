@@ -32,14 +32,14 @@ void main()
     // multiply brightness to diffuse as this is the light that is reflected that viewers see //
     vec3 diffuse = diff * lightColor * brightness;
     
-    vec3 ambientCol = ambientColor * ambientStr;
+    vec3 ambientCol = ambientColor * ambientStr * brightness;
 
     vec3 viewDir = normalize(cameraPos - fragPos);
     vec3 reflectDir = reflect(-lightDir, normal);
 
     float spec = pow(max(dot(reflectDir, viewDir), 0.1), specPhong);
     
-    vec3 specColor = spec * specStr * lightColor;
+    vec3 specColor = spec * specStr * lightColor * brightness;
 
     FragColor = vec4(specColor + diffuse + ambientCol, 1.0) * texture(tex0, texCoord);
 }
