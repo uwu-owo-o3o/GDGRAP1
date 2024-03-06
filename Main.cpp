@@ -304,8 +304,7 @@ int main(){
 
     // shortcut is through glm::lookat() for the camera, 1st param is eye, 2nd param is center, and 3rd is WorldUp variable //
     glm::vec3 camera(0, 0, 10.f);
-    glm::vec3 centerPosition = glm::vec3(0.0, 0.f, -1.f);
-
+   
     glm::mat4 cameraPositionMatrix = glm::translate(glm::mat4(1.0f), camera * -1.0f);
 
     glm::vec3 WorldUp = glm::vec3(0, 1.0f, 0);
@@ -345,8 +344,7 @@ int main(){
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        x = x_mod;
-        y = y_mod;
+       
         //theta += 0.005f;
 
         unsigned int projectionLoc = glGetUniformLocation(shaderProg, "projection");
@@ -376,6 +374,7 @@ int main(){
         glDepthMask(GL_TRUE);
         glDepthFunc(GL_LESS);
         
+        glUseProgram(shaderProg);
         
         // start with translation matrix //
         glm::mat4 transformation_matrix = glm::translate(identity_matrix, glm::vec3(x, y, z));
@@ -413,11 +412,11 @@ int main(){
 
         GLuint specPhongAddress = glGetUniformLocation(shaderProg, "specPhong");
         glUniform1f(specPhongAddress, specPhong);
-
-
+        
         glUseProgram(shaderProg);
         glBindVertexArray(VAO);
-       
+        
+
         glDrawArrays(GL_TRIANGLES, 0, mesh_indices.size() / 8);
 
         glEnd();
