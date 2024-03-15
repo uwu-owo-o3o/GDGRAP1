@@ -81,7 +81,7 @@ int main(){
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_width, img_height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex_bytes);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(tex_bytes);
-    glEnable(GL_DEPTH_TEST); // allows the 3d model's rendering for the "back" part of the model to disappear
+    glEnable(GL_DEPTH_TEST);
 
     std::fstream vertSrc("Shaders/sample.vert");
     std::stringstream vertBuff;
@@ -179,12 +179,10 @@ int main(){
     float axis_z = 0.f;
     
     glm::mat4 projectionMatrix = glm::perspective(
-        glm::radians(60.f), // fov
-        // zoom in - fov
-        // zoom out + fov
-        window_height / window_width, // aspect ratio
-        0.1f, //zNear [NOTE]: zNear cannot be >= 0 !
-        100.f //zFar
+        glm::radians(60.f), 
+        window_height / window_width,
+        0.1f, 
+        100.f 
     );
 
     // shortcut is through glm::lookat() for the camera, 1st param is eye, 2nd param is center, and 3rd is WorldUp variable //
@@ -216,14 +214,18 @@ int main(){
     glm::mat4 viewMatrix = cameraOrientation * cameraPositionMatrix;
 
     // lighting things
-    glm::vec3 lightPos = glm::vec3(0, 0, 0.0); // -10, 3, 0 //
+    glm::vec3 lightPos = glm::vec3(-10.f, 3.f, 0.f); // -10, 3, 0 //
     glm::vec3 lightColor = glm::vec3(1, 1, 1);
 
     float ambientStr = 0.000000000025f; // keep strength low, preferably less than 1
     glm::vec3 ambientColor = lightColor;
 
     float specStr = 0.5f;
-    float specPhong = 16; // usual range is 16 to 25
+    float specPhong = 16.f; // usual range is 16 to 25
+
+    float baseConstant = 1.0f;
+    float baseLinear = 0.027f;
+    float baseQuadratic = 0.0028f;
 
     while (!glfwWindowShouldClose(window))
     {
@@ -261,6 +263,15 @@ int main(){
         GLuint lightColorAddress = glGetUniformLocation(shaderProg, "lightColor");
         glUniform3fv(lightColorAddress, 1, glm::value_ptr(lightColor));
 
+        GLuint baseConstantAddress = glGetUniformLocation(shaderProg, "constant");
+        glUniform1f(baseConstantAddress, baseConstant);
+
+        GLuint baseLinearAddress = glGetUniformLocation(shaderProg, "linear");
+        glUniform1f(baseLinearAddress, baseLinear);
+
+        GLuint baseQuadraticAddress = glGetUniformLocation(shaderProg, "quadratic");
+        glUniform1f(baseQuadraticAddress, baseQuadratic);
+
         GLuint ambientStrAddress = glGetUniformLocation(shaderProg, "ambientStr");
         glUniform1f(ambientStrAddress, ambientStr);
 
@@ -276,6 +287,7 @@ int main(){
         GLuint specPhongAddress = glGetUniformLocation(shaderProg, "specPhong");
         glUniform1f(specPhongAddress, specPhong);
 
+   
 
         glUseProgram(shaderProg);
         glBindVertexArray(VAO);

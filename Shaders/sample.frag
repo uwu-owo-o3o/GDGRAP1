@@ -11,35 +11,46 @@ uniform float ambientStr;
 uniform vec3 ambientColor;
 
 uniform vec3 cameraPos;
+
 uniform float specStr;
 uniform float specPhong;
+
+uniform float constant;
+uniform float linear;
+uniform float quadratic;
 
 in vec2 texCoord;
 in vec3 normCoord;
 in vec3 fragPos;
 
-void main()
-{
-    float brightness = 0.75f;
+void main() {
 
     vec3 normal = normalize(normCoord);
 
-    // removed light position as it's not needed for directional light, negated fragPos to "flip" the light //
-    vec3 lightDir = normalize(-fragPos);
+    vec3 lightDir = normalize(lightPos - fragPos);
 
     float diff =  max(dot(normal, lightDir), 0.0);
 
-    // multiply brightness to diffuse as this is the light that is reflected that viewers see //
-    vec3 diffuse = diff * lightColor * brightness;
+    vec3 diffuse = diff * lightColor;
     
-    vec3 ambientCol = ambientColor * ambientStr * brightness;
+    vec3 ambientCol = ambientColor * ambientStr;
 
     vec3 viewDir = normalize(cameraPos - fragPos);
     vec3 reflectDir = reflect(-lightDir, normal);
 
     float spec = pow(max(dot(reflectDir, viewDir), 0.1), specPhong);
     
-    vec3 specColor = spec * specStr * lightColor * brightness;
+    vec3 specColor = spec * specStr * lightColor;
+
+    float distance = length(lightPos - fragPos);
+
+    float intensity = constant + (linear * distance) + (quadratic * (distance * distance));
+    float attentuation = 1.0f / intensity;
+
+    specColor *= attentuation;
+    diffuse *= attentuation;
+    ambientCol *= attentuation;
+    
 
     FragColor = vec4(specColor + diffuse + ambientCol, 1.0) * texture(tex0, texCoord);
 }
