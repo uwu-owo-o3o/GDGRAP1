@@ -111,7 +111,7 @@ int main(){
 
     glLinkProgram(shaderProg);
 
-    std::string path = "3D/djSword.obj";
+    std::string path = "3D/sphere.obj";
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> material;
     std::string warning, error;
@@ -131,8 +131,8 @@ int main(){
         mesh_indices.push_back(attributes.normals[(vData.normal_index * 3) + 1]);
         mesh_indices.push_back(attributes.normals[(vData.normal_index * 3) + 2]);
 
-        mesh_indices.push_back(attributes.texcoords[(vData.texcoord_index * 2)]);
-        mesh_indices.push_back(attributes.texcoords[(vData.texcoord_index * 2) + 1]);
+       /* mesh_indices.push_back(attributes.texcoords[(vData.texcoord_index * 2)]);
+        mesh_indices.push_back(attributes.texcoords[(vData.texcoord_index * 2) + 1]);*/
     }
 
     GLuint VAO, VBO;
@@ -292,7 +292,7 @@ int main(){
         glUseProgram(shaderProg);
         glBindVertexArray(VAO);
        
-        glDrawArrays(GL_TRIANGLES, 0, mesh_indices.size() / 8);
+        glDrawArrays(GL_TRIANGLES, 0, mesh_indices.size() / 6);
 
         glEnd();
 
