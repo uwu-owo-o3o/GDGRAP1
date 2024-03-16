@@ -71,14 +71,14 @@ int main(){
     int img_width, img_height, colorChannels;
 
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* tex_bytes = stbi_load("3d/partenza.jpg", &img_width, &img_height, &colorChannels, 0);
+    unsigned char* tex_bytes = stbi_load("3d/Knuckles.png", &img_width, &img_height, &colorChannels, 0);
 
     GLuint texture;
     glGenTextures(1, &texture);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_width, img_height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex_bytes);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_width, img_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_bytes);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(tex_bytes);
     glEnable(GL_DEPTH_TEST);
@@ -111,7 +111,7 @@ int main(){
 
     glLinkProgram(shaderProg);
 
-    std::string path = "3D/sphere.obj";
+    std::string path = "3D/Knuckles.obj";
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> material;
     std::string warning, error;
@@ -131,8 +131,8 @@ int main(){
         mesh_indices.push_back(attributes.normals[(vData.normal_index * 3) + 1]);
         mesh_indices.push_back(attributes.normals[(vData.normal_index * 3) + 2]);
 
-       /* mesh_indices.push_back(attributes.texcoords[(vData.texcoord_index * 2)]);
-        mesh_indices.push_back(attributes.texcoords[(vData.texcoord_index * 2) + 1]);*/
+        mesh_indices.push_back(attributes.texcoords[(vData.texcoord_index * 2)]);
+        mesh_indices.push_back(attributes.texcoords[(vData.texcoord_index * 2) + 1]);
     }
 
     GLuint VAO, VBO;
@@ -169,11 +169,11 @@ int main(){
     float y = 0.f;
     float z = -2.0f;
 
-    float scale_x = 0.095f;
-    float scale_y = 0.095f;
-    float scale_z = 0.095f;
+    float scale_x = 0.0095f;
+    float scale_y = 0.0095f;
+    float scale_z = 0.0095f;
 
-    float theta = 90.0f;
+    float theta = 45.0f;
     float axis_x = 0.f;
     float axis_y = 1.f;
     float axis_z = 0.f;
@@ -292,7 +292,7 @@ int main(){
         glUseProgram(shaderProg);
         glBindVertexArray(VAO);
        
-        glDrawArrays(GL_TRIANGLES, 0, mesh_indices.size() / 6);
+        glDrawArrays(GL_TRIANGLES, 0, mesh_indices.size() / 8);
 
         glEnd();
 
