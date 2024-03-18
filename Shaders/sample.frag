@@ -51,6 +51,6 @@ void main() {
     diffuse *= attentuation;
     ambientCol *= attentuation;
     
-
-    FragColor = vec4(specColor + diffuse + ambientCol, 1.0) * texture(tex0, texCoord);
+    //specColor + diffuse + ambientCol
+    FragColor = vec4(lightColor, 1.0) * texture(tex0, texCoord);
 }
