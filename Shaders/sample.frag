@@ -20,7 +20,11 @@ in vec3 fragPos;
 
 void main()
 {
-    
+    vec4 pixelColor = texture(tex0, texCoord);
+    if (pixelColor.a < 0.1) {
+        discard;
+    }
+
     vec3 normal = normalize(normCoord);
     vec3 lightDir = normalize(lightPos - fragPos);
 

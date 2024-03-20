@@ -62,14 +62,14 @@ int main(){
     int img_width, img_height, colorChannels;
 
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* tex_bytes = stbi_load("3d/partenza.jpg", &img_width, &img_height, &colorChannels, 0);
+    unsigned char* tex_bytes = stbi_load("3d/yae.png", &img_width, &img_height, &colorChannels, 0);
 
     GLuint texture;
     glGenTextures(1, &texture);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_width, img_height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex_bytes);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_width, img_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_bytes);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(tex_bytes);
     glEnable(GL_DEPTH_TEST); // allows the 3d model's rendering for the "back" part of the model to disappear
@@ -102,7 +102,7 @@ int main(){
 
     glLinkProgram(shaderProg);
 
-    std::string path = "3D/djSword.obj";
+    std::string path = "3D/plane.obj";
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> material;
     std::string warning, error;
@@ -284,14 +284,14 @@ int main(){
     float y = 0.f;
     float z = -2.f;
 
-    float scale_x = 0.095f;
-    float scale_y = 0.095f;
-    float scale_z = 0.095f;
+    float scale_x = 5.5f;
+    float scale_y = 5.5f;
+    float scale_z = 5.5f;
 
     float theta = 90.0f;
     float axis_x = 0.f;
-    float axis_y = 1.f;
-    float axis_z = 0.f;
+    float axis_y = 0.f;
+    float axis_z = -1.f;
     
     glm::mat4 projectionMatrix = glm::perspective(
         glm::radians(60.f), // fov
