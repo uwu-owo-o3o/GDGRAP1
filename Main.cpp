@@ -214,8 +214,10 @@ int main(){
     glm::mat4 viewMatrix = cameraOrientation * cameraPositionMatrix;
 
     // lighting things
-    glm::vec3 lightPos = glm::vec3(0.f, 0.f, -2.f); // -10, 3, 0 //
-    glm::vec3 lightColor = glm::vec3(1.f, 0.f, 1.f);
+    glm::vec3 lightPos = glm::vec3(-5.f, 0.f, -2.f); // -10, 3, 0 //
+    glm::vec3 lightColor = glm::vec3(1.f, 0.f, 0.f);
+    glm::vec3 lightColor2 = glm::vec3(0.f, 0.f, 1.f);
+    glm::vec3 lightDirection = glm::vec3(0.0f, -5.0f, 0.0f);
 
     float ambientStr = 0.00025f; // keep strength low, preferably less than 1
     glm::vec3 ambientColor = lightColor;
@@ -262,7 +264,7 @@ int main(){
 
         GLuint lightColorAddress = glGetUniformLocation(shaderProg, "lightColor");
         glUniform3fv(lightColorAddress, 1, glm::value_ptr(lightColor));
-
+        
         GLuint baseConstantAddress = glGetUniformLocation(shaderProg, "constant");
         glUniform1f(baseConstantAddress, baseConstant);
 
@@ -279,13 +281,32 @@ int main(){
         glUniform3fv(ambientColorAddress, 1, glm::value_ptr(ambientColor));
 
         GLuint camerPosAddress = glGetUniformLocation(shaderProg, "cameraPos");
-        glUniform3fv(camerPosAddress, 1, glm::value_ptr(cameraPositionMatrix));
+        glUniform3fv(camerPosAddress, 1, glm::value_ptr(camera));
 
         GLuint specStrAddress = glGetUniformLocation(shaderProg, "specStr");
         glUniform1f(specStrAddress, specStr);
 
         GLuint specPhongAddress = glGetUniformLocation(shaderProg, "specPhong");
         glUniform1f(specPhongAddress, specPhong);
+
+        GLuint lightDirectionAddress = glGetUniformLocation(shaderProg, "lightDirection");
+        glUniform3fv(lightDirectionAddress, 1, glm::value_ptr(lightDirection));
+
+        GLuint lightColorAddress2 = glGetUniformLocation(shaderProg, "lightColor2");
+        glUniform3fv(lightColorAddress2, 1, glm::value_ptr(lightColor2));
+
+        GLuint ambientStrAddress2 = glGetUniformLocation(shaderProg, "ambientStr2");
+        glUniform1f(ambientStrAddress2, ambientStr);
+
+        GLuint ambientColorAddress2 = glGetUniformLocation(shaderProg, "ambientColor2");
+        glUniform3fv(ambientColorAddress2, 1, glm::value_ptr(ambientColor));
+
+        GLuint specStrAddress2 = glGetUniformLocation(shaderProg, "specStr2");
+        glUniform1f(specStrAddress2, specStr);
+
+        GLuint specPhongAddress2 = glGetUniformLocation(shaderProg, "specPhong2");
+        glUniform1f(specPhongAddress2, specPhong);
+
 
    
 
