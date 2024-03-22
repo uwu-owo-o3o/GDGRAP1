@@ -62,7 +62,7 @@ int main(){
     int img_width, img_height, colorChannels;
 
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* tex_bytes = stbi_load("3d/yae.png", &img_width, &img_height, &colorChannels, 0);
+    unsigned char* tex_bytes = stbi_load("3d/gradient.png", &img_width, &img_height, &colorChannels, 0);
 
     GLuint texture;
     glGenTextures(1, &texture);
@@ -340,6 +340,10 @@ int main(){
 
     float specStr = 0.5f;
     float specPhong = 16; // usual range is 16 to 25
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
 
     while (!glfwWindowShouldClose(window))
     {
