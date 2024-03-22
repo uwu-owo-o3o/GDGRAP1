@@ -3,6 +3,7 @@
 out vec4 FragColor;
 
 uniform sampler2D tex0;
+uniform sampler2D norm_tex;
 
 uniform vec3 lightPos;
 uniform vec3 lightColor;
@@ -25,7 +26,10 @@ void main()
         discard;
     }
 
-    vec3 normal = normalize(normCoord);
+    //vec3 normal = normalize(normCoord);
+    vec3 normal = texture(norm_tex, texCoord).rgb;
+    normal = normalize(normal * 2.0 - 1.0);
+
     vec3 lightDir = normalize(lightPos - fragPos);
 
     float diff = max(dot(normal, lightDir), 0.0);

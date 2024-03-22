@@ -62,17 +62,32 @@ int main(){
     int img_width, img_height, colorChannels;
 
     stbi_set_flip_vertically_on_load(true);
-    unsigned char* tex_bytes = stbi_load("3d/gradient.png", &img_width, &img_height, &colorChannels, 0);
+    unsigned char* tex_bytes = stbi_load("3d/brickwall.jpg", &img_width, &img_height, &colorChannels, 0);
 
     GLuint texture;
     glGenTextures(1, &texture);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img_width, img_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex_bytes);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_width, img_height, 0, GL_RGB, GL_UNSIGNED_BYTE, tex_bytes);
     glGenerateMipmap(GL_TEXTURE_2D);
     stbi_image_free(tex_bytes);
     glEnable(GL_DEPTH_TEST); // allows the 3d model's rendering for the "back" part of the model to disappear
+
+    int img_width2, img_height2, colorChannels2;
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char* normal_bytes = stbi_load("3d/brickwall_normal.jpg", &img_width2, &img_height2, &colorChannels2, 0);
+
+    GLuint norm_tex;
+    glGenTextures(1, &norm_tex);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, norm_tex);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_width2, img_height2, 0, GL_RGB, GL_UNSIGNED_BYTE, normal_bytes);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(normal_bytes);
 
     std::fstream vertSrc("Shaders/sample.vert");
     std::stringstream vertBuff;
@@ -392,9 +407,16 @@ int main(){
         unsigned int transformLoc = glGetUniformLocation(shaderProg, "transform");
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(transformation_matrix));
 
-        GLuint tex0Address = glGetUniformLocation(shaderProg, "tex0");
+        glActiveTexture(GL_TEXTURE0);
+        GLuint tex0Loc = glGetUniformLocation(shaderProg, "tex0");
         glBindTexture(GL_TEXTURE_2D, texture);
-        glUniform1i(tex0Address, 0);
+        glUniform1i(tex0Loc, 0);
+
+        glActiveTexture(GL_TEXTURE1);
+        GLuint tex1Loc = glGetUniformLocation(shaderProg, "norm_tex");
+        glBindTexture(GL_TEXTURE_2D, norm_tex);
+        glUniform1i(tex1Loc, 1);
+
 
         GLuint lightAddress = glGetUniformLocation(shaderProg, "lightPos");
         glUniform3fv(lightAddress, 1, glm::value_ptr(lightPos));
